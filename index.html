@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>はたらくタイプ診断｜就活の自己分析デモ</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6fb;--surface:#fff;--ink:#16213e;--sub:#5b6478;--line:#dde2ee;--accent:#4457d9;--accent-ink:#fff;--soft:#e8ebfb;--ok:#1f9d6b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10152a;--surface:#1a2140;--ink:#eef0fa;--sub:#a3abc4;--line:#2d3660;--accent:#8c9bff;--accent-ink:#10152a;--soft:#262f5a;--ok:#5fd6a3}}
+:root[data-theme="dark"]{--bg:#10152a;--surface:#1a2140;--ink:#eef0fa;--sub:#a3abc4;--line:#2d3660;--accent:#8c9bff;--accent-ink:#10152a;--soft:#262f5a;--ok:#5fd6a3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;line-height:1.75;background-color:var(--bg)}
+main{max-width:640px;margin:0 auto;padding:24px 18px 56px}
+h1,h2,h3{line-height:1.35;margin:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px}
+.btn{font:inherit;font-weight:700;border:0;border-radius:999px;padding:14px 28px;background:var(--accent);color:var(--accent-ink);cursor:pointer;font-size:1rem}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn:focus-visible,.opt:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.hide{display:none!important}
+/* intro */
+.hero{padding:36px 8px 28px}
+.hero h1{font-size:clamp(2rem,8vw,2.8rem);font-weight:900;letter-spacing:.01em}
+.hero p{color:var(--sub);margin:14px 0 26px}
+.axes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 28px;padding:0;list-style:none}
+.axes li{background:var(--soft);border-radius:12px;padding:10px 14px;font-size:.88rem;font-weight:500}
+.axes b{display:block;font-size:.95rem}
+.note{font-size:.8rem;color:var(--sub);margin-top:16px}
+/* quiz */
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-bottom:8px}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.count{font-size:.85rem;color:var(--sub);margin-bottom:18px}
+.q{font-size:1.25rem;font-weight:700;margin-bottom:22px;min-height:4.4em}
+.scale{display:flex;flex-direction:column;gap:10px}
+.opt{font:inherit;text-align:left;width:100%;padding:14px 18px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;font-size:1rem;transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--accent);background:var(--soft)}
+.back{margin-top:18px;background:none;border:0;color:var(--sub);font:inherit;cursor:pointer;text-decoration:underline}
+/* result */
+.type-name{font-size:clamp(1.7rem,7vw,2.3rem);font-weight:900;margin:6px 0 4px}
+.catch{color:var(--accent);font-weight:700;margin:0 0 14px}
+.sec{margin-top:28px}
+.sec h3{font-size:1.05rem;margin-bottom:12px}
+.axis{margin:16px 0}
+.axis .lab{display:flex;justify-content:space-between;font-size:.85rem;font-weight:500;margin-bottom:6px}
+.axis .lab span.on{color:var(--accent);font-weight:900}
+.track{position:relative;height:10px;border-radius:99px;background:var(--line)}
+.track::after{content:"";position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:var(--sub);opacity:.4}
+.dot{position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:var(--accent);border:3px solid var(--surface);transform:translate(-50%,-50%);box-shadow:0 0 0 1px var(--accent)}
+.match{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+.match:first-of-type{border-top:0}
+.pct{font-size:1.5rem;font-weight:900;color:var(--accent);min-width:3.4em}
+.match b{display:block}
+.match small{color:var(--sub);line-height:1.5;display:block}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tags span{background:var(--soft);border-radius:99px;padding:4px 14px;font-size:.88rem;font-weight:500}
+ul.tips{margin:0;padding-left:1.2em}
+ul.tips li{margin-bottom:8px}
+.pr{background:var(--soft);border-radius:14px;padding:16px 18px;font-size:.95rem}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 20px;border-radius:99px;font-size:.9rem;font-weight:700}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+
+<section id="intro" class="hero">
+  <h1>はたらくタイプ診断</h1>
+  <p>12問・約2分。あなたの「大事にしたいこと」から、相性のいい会社の傾向と自己PRのヒントがわかります。</p>
+  <ul class="axes">
+    <li><b>挑戦 ⇔ 安定</b>環境の変化との付き合い方</li>
+    <li><b>協働 ⇔ 自律</b>チームか、ひとりか</li>
+    <li><b>論理 ⇔ 感性</b>判断のよりどころ</li>
+    <li><b>専門 ⇔ 幅広</b>深めるか、広げるか</li>
+  </ul>
+  <button class="btn" id="start">診断をはじめる</button>
+  <p class="note">※デモ版です。結果は就活の「きっかけ」づくりとしてお使いください。</p>
+</section>
+
+<section id="quiz" class="card hide">
+  <div class="bar"><i id="prog"></i></div>
+  <div class="count" id="count"></div>
+  <div class="q" id="qtext"></div>
+  <div class="scale" id="scale"></div>
+  <button class="back" id="back">ひとつ前に戻る</button>
+</section>
+
+<section id="result" class="hide"></section>
+<div id="toast" class="toast hide"></div>
+</main>
+
+<script>
+// axes: 0=挑戦(高い=挑戦) 1=協働(高い=協働) 2=論理(高い=論理) 3=専門(高い=専門)
+const AX=[["安定","挑戦"],["自律","協働"],["感性","論理"],["幅広","専門"]];
+const Q=[
+ [0,1,"まだ誰もやっていないことに、真っ先に手を挙げたい。"],
+ [0,-1,"毎年やることが大きく変わらない環境のほうが落ち着く。"],
+ [0,1,"失敗するリスクがあっても、成長スピードの速い環境を選びたい。"],
+ [1,1,"グループ活動では、メンバーの意見をまとめる役になりやすい。"],
+ [1,-1,"ひとりで黙々と進めたほうが、よい成果が出る。"],
+ [1,1,"誰かの「ありがとう」が、いちばんのやる気になる。"],
+ [2,1,"物事を決めるとき、データや根拠を集めてから判断したい。"],
+ [2,-1,"直感やその場の空気感を大事にして決めることが多い。"],
+ [2,1,"課題に出会うと、まず原因を分解して整理したくなる。"],
+ [3,1,"ひとつのことを、誰よりも深く極めたい。"],
+ [3,-1,"いろいろな分野を経験して、視野を広げたい。"],
+ [3,-1,"数年ごとに違う仕事へ異動できるほうが、わくわくする。"]
+];
+const TYPES=[
+ {n:"開拓リーダー型",c:"前例のない場所で、仲間を巻き込む人",v:[85,80,50,25],
+  cos:[["ベンチャー・スタートアップ","裁量が大きく、新規事業に早く関われる"],["総合商社","事業を立ち上げ、人を動かす経験が積める"],["ITサービス企業","成長市場でチームを率いるチャンスが多い"]],
+  ind:["ベンチャー","商社","IT・Web","人材"],
+  tips:["「自分が動いて周りを動かした」経験を軸にする","変化の多い環境が合う反面、教育制度の有無は要確認","ゼミ・サークル・バイトで立ち上げた経験を棚卸しする"],
+  pr:"「現状を変えるために、まず自分から動き、仲間を巻き込んで成果を出した経験」を具体的な数字とセットで話しましょう。"},
+ {n:"戦略アナリスト型",c:"考え抜いて、最短ルートを描く人",v:[75,25,90,50],
+  cos:[["戦略コンサルティング","課題分解と仮説思考を毎日のように使える"],["外資系企業・データ分析職","成果主義で、個人の分析力が評価される"],["金融（投資・M&A）","論理と数字で意思決定に関われる"]],
+  ind:["コンサル","外資","金融","データ分析"],
+  tips:["「なぜそう考えたか」を順序立てて説明できるように準備する","ケース面接やSPI対策を早めに始める","チームでの協働経験も1つ用意するとバランスがよい"],
+  pr:"「課題を分解し、根拠をもとに打ち手を決めて、結果を検証した経験」を、思考の過程が伝わるように話しましょう。"},
+ {n:"職人エンジニア型",c:"深く掘って、本質を仕上げる人",v:[50,25,80,90],
+  cos:[["メーカーの研究開発・技術職","専門性を磨き続けられ、評価されやすい"],["SIer・ソフトウェア企業","技術力が武器になり、専門キャリアが描ける"],["専門商社の技術営業","専門知識を活かして顧客に提案できる"]],
+  ind:["メーカー","IT","研究開発","専門商社"],
+  tips:["研究・制作・個人開発の「深さ」を具体的に語る","専門を活かせる配属かどうかをOB訪問で確認する","コミュニケーション面は「相手に合わせて説明した経験」で補う"],
+  pr:"「ひとつのテーマを粘り強く掘り下げ、課題を解決した経験」と、そこで身についた力を仕事にどう活かすかを話しましょう。"},
+ {n:"縁の下サポーター型",c:"人を支え、場を整える人",v:[25,85,50,40],
+  cos:[["人事・総務など管理部門が強い企業","人を支える役割が正当に評価される"],["公務員・自治体","地域や人の生活を安定して支えられる"],["保険・金融（個人向け）","長期的な信頼関係を築ける"]],
+  ind:["公務員","保険","金融","人材・教育"],
+  tips:["「相手のために工夫した」エピソードを複数用意する","チームを支えた経験を、成果とセットで話す","挑戦姿勢も問われるため、新しく始めたことも1つ入れておく"],
+  pr:"「チームの課題に気づき、裏方として工夫して成果につなげた経験」を、周りの変化が伝わるように話しましょう。"},
+ {n:"共感クリエイター型",c:"人の気持ちから、新しい価値をつくる人",v:[65,75,20,45],
+  cos:[["広告・マーケティング企業","人の心を動かす企画で力を発揮できる"],["エンタメ・メディア","感性とチームワークが両方活きる"],["ブライダル・観光・サービス","お客様の笑顔が直接やりがいになる"]],
+  ind:["広告","エンタメ","サービス","アパレル・化粧品"],
+  tips:["「なぜそれを面白い・大事と思ったか」を言葉にする練習をする","作品やSNS運用などの実績を見せられるようにする","感性を、数字や根拠で補強できると説得力が上がる"],
+  pr:"「相手の気持ちに寄り添って企画し、反応や成果を得た経験」を、工夫したポイントとあわせて話しましょう。"},
+ {n:"堅実プロフェッショナル型",c:"正確さと信頼で、長く積み上げる人",v:[20,45,85,80],
+  cos:[["メガバンク・地方銀行（専門コース）","正確さと専門知識が信頼に直結する"],["インフラ・電力・鉄道","社会を支える仕事を、長期視点で担える"],["会計・士業・専門職","資格と専門性で、長く活躍できる"]],
+  ind:["金融","インフラ","士業・会計","メーカー"],
+  tips:["コツコツ続けた経験や、ミスを防ぐ工夫を具体的に語る","資格取得や継続的な学習の実績が強みになる","「変化への対応力」を問われた際の事例も準備する"],
+  pr:"「正確さを大切に、地道に続けて信頼を得た経験」を、継続期間や具体的な工夫とあわせて話しましょう。"},
+ {n:"柔軟ジェネラリスト型",c:"どこでも馴染み、橋渡しができる人",v:[50,60,55,10],
+  cos:[["大手総合職採用の企業","ジョブローテーションで適性を見極められる"],["メーカー・商社の営業職","幅広い部署・顧客との橋渡し役で活躍できる"],["ITコンサル・SE（上流）","技術と業務の両方をつなぐ役割に向く"]],
+  ind:["大手メーカー","商社","IT","小売・流通"],
+  tips:["「どこでも活躍できる」だけでは弱いので、軸を1つ決める","異なる環境に適応した経験を、具体例で語る","志望動機で「なぜこの会社か」を深掘りしておく"],
+  pr:"「環境が変わっても周りと協力して成果を出した経験」を、適応のために工夫した点を中心に話しましょう。"}
+];
+const OPTS=[["そう思う",2],["ややそう思う",1],["どちらともいえない",0],["あまりそう思わない",-1],["そう思わない",-2]];
+const $=id=>document.getElementById(id);
+let idx=0,ans=[];
+
+$("start").onclick=()=>{$("intro").classList.add("hide");$("quiz").classList.remove("hide");idx=0;ans=[];show();window.scrollTo(0,0)};
+$("back").onclick=()=>{if(idx>0){idx--;ans.pop();show()}};
+
+function show(){
+  $("count").textContent=`Q${idx+1} / ${Q.length}`;
+  $("prog").style.width=(idx/Q.length*100)+"%";
+  $("qtext").textContent=Q[idx][2];
+  $("back").classList.toggle("hide",idx===0);
+  $("scale").innerHTML="";
+  OPTS.forEach(([t,v])=>{
+    const b=document.createElement("button");b.className="opt";b.textContent=t;
+    b.onclick=()=>{ans.push(v);idx++;idx<Q.length?show():finish()};
+    $("scale").appendChild(b);
+  });
+}
+
+function finish(){
+  // 各軸6点満点→0〜100%
+  const raw=[0,0,0,0],n=[0,0,0,0];
+  Q.forEach((q,i)=>{raw[q[0]]+=ans[i]*q[1];n[q[0]]+=2});
+  const sc=raw.map((r,i)=>Math.round(50+50*r/n[i]));
+  // 最も近いタイプとの類似度
+  const ranked=TYPES.map(t=>{
+    const d=Math.sqrt(t.v.reduce((s,x,i)=>s+(x-sc[i])**2,0))/200;
+    return {t,sim:Math.round(100-d*100)};
+  }).sort((a,b)=>b.sim-a.sim);
+  render(sc,ranked);
+}
+
+function render(sc,ranked){
+  const T=ranked[0].t;
+  const axisHtml=AX.map((a,i)=>`<div class="axis"><div class="lab"><span class="${sc[i]<50?'on':''}">${a[0]}</span><span>${sc[i]}%</span><span class="${sc[i]>=50?'on':''}">${a[1]}</span></div><div class="track"><div class="dot" style="left:${Math.max(6,Math.min(94,sc[i]))}%"></div></div></div>`).join("");
+  const matches=T.cos.map((c,i)=>`<div class="match"><div class="pct">${Math.max(70,ranked[0].sim-i*4)}%</div><div><b>${c[0]}</b><small>${c[1]}</small></div></div>`).join("");
+  const sub=ranked[1];
+  $("result").innerHTML=`
+  <div class="card">
+    <small style="color:var(--sub)">あなたのタイプは</small>
+    <h2 class="type-name">${T.n}</h2>
+    <p class="catch">${T.c}</p>
+    <div class="sec"><h3>4つの傾向</h3>${axisHtml}</div>
+    <div class="sec"><h3>相性のいい会社の傾向</h3>${matches}
+      <div class="tags" style="margin-top:12px">${T.ind.map(x=>`<span>${x}</span>`).join("")}</div></div>
+    <div class="sec"><h3>就活で意識したいこと</h3><ul class="tips">${T.tips.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+    <div class="sec"><h3>自己PRの組み立て方</h3><div class="pr">${T.pr}</div></div>
+    <div class="sec"><h3>もうひとつの可能性</h3><p style="margin:0">「${sub.t.n}」の要素も ${sub.sim}% 近くあります。${sub.t.c}という一面も、自己PRで使えるかもしれません。</p></div>
+    <div class="actions"><button class="btn" id="copy">結果をコピー</button><button class="btn ghost" id="retry">もう一度診断する</button></div>
+    <p class="note">この診断は自己理解のきっかけです。OB・OG訪問やインターンで、実際の働き方とも照らし合わせてみてください。</p>
+  </div>`;
+  $("quiz").classList.add("hide");$("result").classList.remove("hide");window.scrollTo(0,0);
+  $("retry").onclick=()=>{$("result").classList.add("hide");$("intro").classList.remove("hide");window.scrollTo(0,0)};
+  $("copy").onclick=()=>{
+    const txt=`【はたらくタイプ診断】私は「${T.n}」でした。\n${T.c}\n相性のいい業界：${T.ind.join("・")}`;
+    const done=()=>{const t=$("toast");t.textContent="コピーしました";t.classList.remove("hide");setTimeout(()=>t.classList.add("hide"),1800)};
+    try{navigator.clipboard.writeText(txt).then(done,done)}catch(e){done()}
+  };
+}
+</script>
+</body>
+</html>
